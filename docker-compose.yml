@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: betalent-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    networks:
+      - betalent-network
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0
+    container_name: betalent-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: betalent_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: user
+    ports:
+      - "3306:3306"
+    networks:
+      - betalent-network
+  gateways-mock:
+    image: matheusprotzen/gateways-mock
+    container_name: betalent-mocks
+    ports:
+      - "3001:3001"
+      - "3002:3002"
+    environment:
+      - REMOVE_AUTH=false
+    networks:
+      - betalent-network
+networks:
+  betalent-network:
+    driver: bridge
