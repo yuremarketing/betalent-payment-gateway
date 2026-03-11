@@ -1,15 +1,29 @@
-# BeTalent Payment Gateway 🚀
+# 🐙 BeTalent - Payment Gateway API
 
-Este projeto é um **Orquestrador de Pagamentos Resiliente** focado em alta disponibilidade e segurança financeira.
+Este projeto é uma API robusta de processamento de pagamentos desenvolvida em Laravel 11, focada em alta disponibilidade e resiliência.
 
-## 🛠️ Diferenciais
-- **Failover Silencioso:** Strategy Pattern para alternância de gateways.
-- **Precisão:** Valores processados em centavos (inteiros).
-- **Idempotência:** Proteção contra duplicidade de cobrança.
+## 🚀 Diferenciais Técnicos (Card 5)
 
-## 🚀 Como Rodar
-1. \`docker-compose up -d\`
-2. \`docker exec -it betalent-app php artisan migrate:fresh --seed\`
+### 1. Sistema de Failover (Resiliência)
+A API utiliza o padrão **Strategy** para gerenciar múltiplos gateways. Caso o provedor principal falhe, o sistema realiza um **failover automático** para o próximo disponível.
 
----
-Desenvolvido por **Yure Mark (yuremarketing)** 🚀
+### 2. Idempotência e Integridade
+- **Proteção contra Duplicidade:** Uso de `idempotency_key` para evitar cobranças duplicadas.
+- **Banco de Dados Profissional:** Relacionamentos normalizados com chaves estrangeiras (`gateway_id`, `product_id`).
+
+### 3. Performance
+- **Eager Loading:** Uso de `with()` nas consultas para evitar o problema N+1 e otimizar a performance.
+
+## 🧪 Como Testar
+
+### Testes de Regras de Negócio
+\`\`\`bash
+chmod +x teste_api.sh
+./teste_api.sh
+\`\`\`
+
+### Simulação de Failover
+\`\`\`bash
+chmod +x test_failover.sh
+./test_failover.sh
+\`\`\`

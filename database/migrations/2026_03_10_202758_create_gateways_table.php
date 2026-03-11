@@ -7,9 +7,9 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('gateways', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); 
-            $table->string('api_url');
-            $table->integer('priority')->default(1);
+            $table->string('name'); // Nome (Gateway A/B)
+            $table->string('api_url'); // URL do Mock
+            $table->integer('priority')->default(1); // Para lógica de failover
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

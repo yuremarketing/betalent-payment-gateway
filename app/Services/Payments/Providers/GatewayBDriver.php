@@ -8,19 +8,14 @@ use Illuminate\Support\Facades\Log;
 
 class GatewayBDriver implements GatewayInterface
 {
-    /**
-     * Implementação do Gateway B.
-     * Eu projetei este driver para ser o nosso braço direito no Failover.
-     * Ele segue exatamente o mesmo contrato do Gateway A, garantindo que
-     * a troca entre eles seja totalmente transparente para o restante do sistema.
-     */
     public function pay(int $amount, array $payload): array
     {
         try {
-            // Aqui eu aponto para o segundo container (porta 3002).
-            // Mantive o padrão de logs para que eu consiga monitorar qual
-            // gateway está sendo mais acionado durante o dia a dia.
-            $response = Http::post('http://betalent-gateway-b:3002/pay', [
+            // AGORA SIM: Eu chamo a URL que está no cofre (.env)
+            // Se no .env estiver 'http://betalent-mocks:3002/pay', ele vai achar o caminho!
+            $url = env('GATEWAY_B_URL');
+
+            $response = Http::timeout(5)->post($url, [
                 'amount' => $amount,
                 'card_number' => $payload['card_number'] ?? '1111',
             ]);
@@ -28,24 +23,16 @@ class GatewayBDriver implements GatewayInterface
             if ($response->successful()) {
                 return [
                     'success' => true,
-                    'transaction_id' => $response->json('id'),
-                    'message' => 'Pago via Gateway B (Redundância Ativa)'
+                    'transaction_id' => (string) ($response->json('id') ?? uniqid()),
                 ];
             }
 
-            return [
-                'success' => false,
-                'message' => 'Falha no processamento do Gateway B'
-            ];
+            return ['success' => false];
 
         } catch (\Exception $e) {
-            // Se o Gateway B também cair, eu registro o erro crítico no log
-            // para que a equipe de infraestrutura seja alertada imediatamente.
-            Log::critical("Erro de conexão com o Gateway B de reserva: " . $e->getMessage());
-            return [
-                'success' => false,
-                'message' => 'Gateway B indisponível'
-            ];
+            // Se o B também falhar, eu aviso no log que a redundância caiu.
+            Log::critical("Erro no Gateway B de reserva: " . $e->getMessage());
+            return ['success' => false];
         }
     }
 }
