@@ -14,3 +14,4 @@ Route::post('/payments', [PaymentController::class, 'store']);
 |implementei a rota de listagem e o método index com paginação
 */
 Route::get('/transactions', [App\Http\Controllers\PaymentController::class, 'index']);
+

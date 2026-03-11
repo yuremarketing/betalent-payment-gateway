@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained();
             $table->integer('amount');
-            $table->string('gateway'); // A coluna que estava faltando!
+            $table->string('gateway'); // A coluna que estava faltando pra funfar!
             $table->string('gateway_transaction_id');
             $table->string('idempotency_key')->unique();
             $table->string('status');

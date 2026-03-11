@@ -1,15 +1,31 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Services\Payments\PaymentService;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller {
+    
     protected $paymentService;
+
     public function __construct(PaymentService $paymentService) {
         $this->paymentService = $paymentService;
     }
+
+    /**
+     * Card 5: Eu implementei este método para listar as transações
+     */
+    public function index() {
+        $transactions = Transaction::latest()->paginate(10);
+        return response()->json($transactions);
+    }
+
+    /**
+     * Card 4: Método para processar o pagamento e salvar no banco
+     */
     public function store(Request $request) {
         $data = $request->validate([
             'product_id' => 'required|exists:products,id',
