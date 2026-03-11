@@ -14,7 +14,9 @@ Utilizei a técnica de identificação e resposta a riscos para garantir a conti
 | **Indisponibilidade do Gateway A** | Crítico | Média | **Mitigar** | Implementação de **Failover Silencioso** para o Gateway B. |
 | **Transações Duplicadas** | Alto | Baixa | **Prevenir** | Uso de `idempotency_key` no banco de dados. |
 | **Inconsistência de Dados** | Alto | Baixa | **Mitigar** | Uso de **Database Migrations** para versionamento de schema. |
-| **Vazamento de Credenciais** | Crítico | Baixa | **Evitar** | Uso de variáveis de ambiente (`.env`) e GitTokens. |
+| **Vazamento de Credenciais** | Crítico | Baixa | **Evitar** | Uso de variáveis de ambiente (`.env`) e Personal Access Tokens. |
+
+
 
 ## 3. Gerenciamento do Escopo e Qualidade (Planejamento)
 O projeto foi executado seguindo padrões de engenharia de software para garantir a manutenibilidade:
