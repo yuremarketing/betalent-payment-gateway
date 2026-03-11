@@ -33,3 +33,11 @@ A transparência com os stakeholders foi garantida através de:
 ---
 **Responsável Técnico e Gestor:** Yure Mark Espíndola da Silva
 **Data:** 10 de Março de 2026
+
+## 6. Evidências de Validação (Logs de Erro e Sucesso)
+Durante a fase de testes, os logs do sistema (`storage/logs/laravel.log`) confirmaram a eficácia da arquitetura:
+* **Failover:** Registrado erro de DNS (`Could not resolve host`) no Gateway A, seguido pela tentativa automática no Gateway B.
+* **Integridade:** Identificado e corrigido erro de `Unknown column 'gateway'`, garantindo a sincronia entre a aplicação e o Banco de Dados (MySQL).
+
+---
+*Documentação atualizada após homologação técnica.*
