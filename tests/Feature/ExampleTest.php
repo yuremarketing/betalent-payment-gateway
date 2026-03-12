@@ -8,18 +8,23 @@ use Database\Seeders\ProductSeeder;
 
 class ExampleTest extends TestCase
 {
-    use RefreshDatabase; // Isso limpa o banco e prepara as migrations para o teste
+    use RefreshDatabase;
 
     /**
-     * Teste básico para verificar se a API está respondendo com dados.
+     * Teste com diagnóstico para descobrir por que a rota dá 404.
      */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_api_products_endpoint_is_accessible(): void
     {
-        // 1. Populamos o banco de teste com os produtos
+        // Garante que o banco tem dados
         $this->seed(ProductSeeder::class);
 
-        // 2. Agora a rota deve encontrar os produtos e retornar 200
-        $response = $this->get('/api/products');
+        // Tentamos acessar a rota de API
+        $response = $this->getJson('/api/products');
+
+        // Se der erro, o Laravel vai imprimir o dump da resposta no log do Actions
+        if ($response->status() !== 200) {
+            dump($response->getContent());
+        }
 
         $response->assertStatus(200);
     }
