@@ -1,4 +1,3 @@
-cat << 'EOF' > test_auth.sh
 #!/bin/bash
 
 BLUE='\033[0;34m'
@@ -8,14 +7,14 @@ NC='\033[0m'
 
 echo -e "${BLUE}=== INICIANDO TESTE DE AUTENTICAÇÃO (CARD 6) ===${NC}\n"
 
-# 1. TESTE SEM TOKEN (DEVE FALHAR)
+# 1. TESTE SEM TOKEN (DEVE FALHAR COM 401)
 echo -e "${BLUE}1. Testando acesso sem Token (Esperado: 401 Unauthorized)...${NC}"
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/transactions)
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Accept: application/json" http://localhost:8000/api/transactions)
 
 if [ "$HTTP_CODE" -eq 401 ]; then
     echo -e "${GREEN}[OK] O porteiro barrou o acesso sem convite! (Status 401)${NC}"
 else
-    echo -e "${RED}[ERRO] A API permitiu acesso sem token! (Status $HTTP_CODE)${NC}"
+    echo -e "${RED}[ERRO] O comportamento esperado era 401, mas recebemos: $HTTP_CODE${NC}"
 fi
 
 # 2. GERANDO TOKEN VIA TINKER
@@ -43,6 +42,3 @@ else
 fi
 
 echo -e "\n${BLUE}=== FIM DO TESTE DE SEGURANÇA ===${NC}"
-EOF
-
-chmod +x test_auth.sh

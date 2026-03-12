@@ -2,25 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Transaction extends Model {
+class Transaction extends Model
+{
+    use HasFactory;
+
     protected $fillable = [
-        'product_id', 
-        'gateway_id', 
-        'amount', 
-        'gateway_transaction_id', 
-        'idempotency_key', 
-        'status'
+        'external_id',
+        'status',
+        'amount',
+        'client_name',
+        'client_email',
+        'gateway',
+        'card_last_numbers'
     ];
 
-    // Isso cria o link entre a transação e o gateway
-    public function gateway() {
-        return $this->belongsTo(Gateway::class);
-    }
-
-    // Link opcional com o produto, se quiser mostrar o nome do produto também
-    public function product() {
-        return $this->belongsTo(Product::class);
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'transaction_products')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
     }
 }

@@ -1,17 +1,15 @@
 <?php
 
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-/*
-| Eu defini esta rota como POST, seguindo o padrão REST para criação de recursos.
-| Usei '::class' para que o Laravel consiga localizar o controlador corretamente.
-*/
-Route::post('/payments', [PaymentController::class, 'store']);
+Route::post('/login', [AuthController::class, 'login']);
 
-/*
-|criei o endpoint de listagem de transações para iniciar o Card 5
-|implementei a rota de listagem e o método index com paginação
-*/
-Route::get('/transactions', [App\Http\Controllers\PaymentController::class, 'index']);
+Route::middleware('auth:sanctum')->group(function () {
+    // Rota de Pagamento (Nível 3 - checkout)
+    Route::post('/payments', [PaymentController::class, 'store']);
 
+    // Rota de Listagem (Protegida pelo middleware 'admin')
+    Route::get('/transactions', [PaymentController::class, 'index'])->middleware('admin');
+});

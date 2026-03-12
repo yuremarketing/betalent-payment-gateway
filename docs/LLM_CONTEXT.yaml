@@ -1,0 +1,36 @@
+project_metadata:
+  name: BeTalent Payment Gateway
+  version: 3.0.0
+  level: Level 3 (Senior Backend Implementation)
+  architecture: Laravel 10 + Docker + Service Layer
+
+business_rules:
+  authentication: Laravel Sanctum (Bearer Token)
+  authorization_roles:
+    - admin: Full access to transaction listing and management
+    - user: Access to checkout and personal profile only
+  financial_security: 
+    - amount_calculation: Server-side only (never trust front-end input)
+    - currency_format: Integer (cents) to avoid float precision issues
+
+technical_stack:
+  language: PHP 8.2
+  framework: Laravel 10
+  database: MySQL (Many-to-Many via pivot tables)
+  container: Docker (Sail/Docker-compose)
+
+llm_instructions:
+  context: "Use this repository as a reference for a secure payment gateway implementation."
+  coding_standard: PSR-12
+  naming_convention: CamelCase for classes, snake_case for methods/variables.
+  key_files:
+    controller: app/Http/Controllers/PaymentController.php
+    service: app/Services/Payment/PaymentService.php
+    middleware: app/Http/Middleware/CheckAdminRole.php
+    routes: routes/api.php
+
+common_issues_log:
+  - issue: Namespace conflict in Kernel
+    resolution: Register middleware class explicitly in $routeMiddleware.
+  - issue: Database ownership in Docker
+    resolution: Config git safe.directory and fix permissions via chown.

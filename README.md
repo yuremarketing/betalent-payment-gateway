@@ -1,29 +1,24 @@
-# 🐙 BeTalent - Payment Gateway API
+# 🐙 BeTalent - Gateway de Pagamento (Nível 3)
 
-Este projeto é uma API robusta de processamento de pagamentos desenvolvida em Laravel 11, focada em alta disponibilidade e resiliência.
+[![PMI Standards](https://img.shields.io/badge/PMI-Governance-blue)](./docs/GOVERNANCA_COMPLETA.md)
+[![LLM Ready](https://img.shields.io/badge/LLM-Ready-green)](./docs/LLM_CONTEXT.yaml)
+[![Laravel](https://img.shields.io/badge/Laravel-10-FF2D20)](https://laravel.com)
 
-## 🚀 Diferenciais Técnicos (Card 5)
+Projeto focado em segurança financeira, arquitetura escalável e governança PMBOK.
 
-### 1. Sistema de Failover (Resiliência)
-A API utiliza o padrão **Strategy** para gerenciar múltiplos gateways. Caso o provedor principal falhe, o sistema realiza um **failover automático** para o próximo disponível.
+## 🤖 Uso com LLMs (IA)
+Este repositório é otimizado para ser lido por IAs. Forneça o arquivo abaixo para contexto imediato:
+👉 [**LLM Context Esqueleto (YAML)**](./docs/LLM_CONTEXT.yaml)
 
-### 2. Idempotência e Integridade
-- **Proteção contra Duplicidade:** Uso de `idempotency_key` para evitar cobranças duplicadas.
-- **Banco de Dados Profissional:** Relacionamentos normalizados com chaves estrangeiras (`gateway_id`, `product_id`).
+## 📊 Governança e Gestão (PMI)
+Acesse a documentação completa de gerenciamento:
+* [📘 Governança e Riscos](./docs/GOVERNANCA_COMPLETA.md)
+* [📜 Histórico de Lições Aprendidas](./docs/HISTORICO_PMI.md)
 
-### 3. Performance
-- **Eager Loading:** Uso de `with()` nas consultas para evitar o problema N+1 e otimizar a performance.
+## 🚀 Como Executar
+1. \`docker-compose up -d\`
+2. \`docker exec -it betalent-app php artisan migrate:fresh --seed\`
+3. \`docker exec -it betalent-app composer dump-autoload\`
 
-## 🧪 Como Testar
-
-### Testes de Regras de Negócio
-\`\`\`bash
-chmod +x teste_api.sh
-./teste_api.sh
-\`\`\`
-
-### Simulação de Failover
-\`\`\`bash
-chmod +x test_failover.sh
-./test_failover.sh
-\`\`\`
+---
+*Projeto desenvolvido por Yure Mark - Março de 2026*

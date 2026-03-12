@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Payments\Providers;
+namespace App\Services\Payment\Providers;
 
-use App\Services\Payments\GatewayInterface;
+use App\Services\Payment\GatewayInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 

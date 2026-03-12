@@ -2,56 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\Payments\PaymentService;
 use App\Models\Transaction;
-use App\Models\Gateway;
+use App\Models\Product;
+use App\Services\Payment\PaymentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PaymentController extends Controller {
-    
+class PaymentController extends Controller
+{
     protected $paymentService;
 
-    public function __construct(PaymentService $paymentService) {
+    public function __construct(PaymentService $paymentService)
+    {
         $this->paymentService = $paymentService;
     }
 
-    public function index() {
-        // O with(['gateway', 'product']) carrega os dados relacionados de uma vez só!
-        $transactions = Transaction::with(['gateway', 'product'])
-            ->latest()
-            ->paginate(10);
-            
-        return response()->json($transactions);
+    // LISTAGEM (O que estava faltando)
+    public function index()
+    {
+        // No Nível 3, retornamos as transações com os produtos relacionados
+        return response()->json(Transaction::with('products')->get());
     }
 
-    public function store(Request $request) {
-        $data = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'amount' => 'required|integer',
+    // PAGAMENTO
+    public function store(Request $request)
+    {
+        $request->validate([
+            'client_name' => 'required|string',
+            'client_email' => 'required|email',
+            'products' => 'required|array|min:1',
+            'products.*.id' => 'required|exists:products,id',
+            'products.*.quantity' => 'required|integer|min:1',
             'card_number' => 'required|string',
-            'idempotency_key' => 'required|string|unique:transactions,idempotency_key',
+            'card_cvv' => 'required|string',
         ]);
 
-        try {
-            return DB::transaction(function () use ($data) {
-                $result = $this->paymentService->processPayment($data);
-                
-                $gatewayObj = Gateway::where('name', $result['gateway'])->first();
+        return DB::transaction(function () use ($request) {
+            $totalAmount = 0;
+            $productData = [];
 
-                Transaction::create([
-                    'product_id' => $data['product_id'],
-                    'gateway_id' => $gatewayObj->id,
-                    'amount' => $data['amount'],
-                    'gateway_transaction_id' => (string) ($result['transaction_id'] ?? 'N/A'),
-                    'idempotency_key' => $data['idempotency_key'],
-                    'status' => 'paid',
-                ]);
+            foreach ($request->products as $item) {
+                $product = Product::findOrFail($item['id']);
+                $subtotal = $product->amount * $item['quantity'];
+                $totalAmount += $subtotal;
+                $productData[$item['id']] = ['quantity' => $item['quantity']];
+            }
 
-                return response()->json($result);
-            });
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+            $paymentResponse = $this->paymentService->process($totalAmount, $request->all());
+
+            $transaction = Transaction::create([
+                'external_id' => $paymentResponse['id'],
+                'status' => $paymentResponse['status'],
+                'amount' => $totalAmount,
+                'client_name' => $request->client_name,
+                'client_email' => $request->client_email,
+                'gateway' => $paymentResponse['gateway'],
+                'card_last_numbers' => substr($request->card_number, -4),
+            ]);
+
+            $transaction->products()->attach($productData);
+            return response()->json($transaction, 201);
+        });
     }
 }
